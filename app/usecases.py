@@ -3,15 +3,17 @@ from app.core import ports
 
 
 class RAGService:
-    def __init__(self, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort):
+    def __init__(self, db: ports.DatabasePort, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort) -> None:
+        self.db = db
         self.document_repo = document_repo
         self.openai_adapter = openai_adapter
 
     def generate_answer(self, query: str) -> str:
-        documents = self.document_repo.get_documents(query)
-        print(f"Documents: {documents}")
-        context = " ".join([doc.content for doc in documents])
-        return self.openai_adapter.generate_text(prompt=query, retrieval_context=context)
+         documents = self.document_repo.get_documents(query, self.openai_adapter)
+         print(f"Documents: {documents}")
+         context = " ".join([doc.content for doc in documents])
+         return self.openai_adapter.generate_text(prompt=query, retrieval_context=context)
+
 
     def save_document(self, content: str) -> None:
         document = Document(content=content)
