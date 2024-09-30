@@ -6,11 +6,11 @@ from app.core import models
 
 class DocumentRepositoryPort(ABC):
     @abstractmethod
-    def save_document(self, document: models.Document) -> None:
+    def save_document(self, document: models.Document, content: str, openai_client) -> None:
         pass
 
     @abstractmethod
-    def get_documents(self, query: str, n_results: int | None = None) -> List[models.Document]:
+    def get_documents(self, query: str, openai_client ,n_results: int | None = None) -> List[models.Document]:
         pass
 
 

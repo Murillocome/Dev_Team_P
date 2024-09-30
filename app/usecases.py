@@ -1,5 +1,8 @@
+import os
+from fastapi import UploadFile
 from app.core.models import Document
 from app.core import ports
+from app.helpers.strategies_poc import FileReader
 
 
 class RAGService:
@@ -30,3 +33,7 @@ class RAGService:
         # Guardar información del documento en MongoDB
         self.db.save_document(document)
 
+        # Obtengo el contenido del documento
+        content = FileReader(document.ruta).read_file()
+        # Realiza embedding, chunks y guarda en ChromaDB
+        self.document_repo.save_document(document, content, self.openai_adapter)
