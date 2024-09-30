@@ -7,8 +7,11 @@ from app.api import dependencies
 rag_router = APIRouter()
 
 
-class DocumentInput(BaseModel):
-    content: str = pydantic.Field(..., min_length=1)
+@rag_router.post("/sing-up/", status_code=201)
+def sing_up(username: str, password: str,
+            rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
+    rag_service.sing_up(username, password)
+    return {"status": "User created successfully"}
 
 
 @rag_router.post("/generate-answer/", status_code=200)
