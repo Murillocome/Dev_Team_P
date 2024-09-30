@@ -42,3 +42,9 @@ class RAGService:
 
     def sing_up(self, username: str, password: str) -> None:
         self.db.save_user(username, password)
+
+    def get_document(self, document_id: str) -> Document:
+        return self.db.get_document(document_id)
+
+    def get_vectors(self):
+        return self.document_repo.get_vectors()

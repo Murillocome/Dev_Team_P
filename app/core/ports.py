@@ -13,6 +13,9 @@ class DocumentRepositoryPort(ABC):
     def get_documents(self, query: str, openai_client ,n_results: int | None = None) -> List[models.Document]:
         pass
 
+    @abstractmethod
+    def get_vectors(self):
+        pass
 
 class LlmPort(ABC):
     @abstractmethod
