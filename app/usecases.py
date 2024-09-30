@@ -13,6 +13,20 @@ class RAGService:
         context = " ".join([doc.content for doc in documents])
         return self.openai_adapter.generate_text(prompt=query, retrieval_context=context)
 
-    def save_document(self, content: str) -> None:
-        document = Document(content=content)
-        self.document_repo.save_document(document)
+    def save_document(self, file: UploadFile) -> None:
+        # Obtener el nombre del archivo
+        file_name = file.filename
+
+        # Crear la carpeta 'media' si no existe
+        os.makedirs('media', exist_ok=True)
+
+        # Guardar el archivo en la carpeta 'media'
+        file_path = os.path.join('media', file_name)
+        with open(file_path, 'wb') as f:
+            f.write(file.file.read())
+
+        # Crear modelo ducumento con valores iniciales
+        document = Document(nombre=file_name, ruta=file_path)
+        # Guardar información del documento en MongoDB
+        self.db.save_document(document)
+
