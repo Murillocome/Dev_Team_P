@@ -1,7 +1,9 @@
 import chromadb
+import numpy as np
 from typing import List
 from app.core import ports
 from app.core import models
+from app.helpers.vectorize_documents import document_to_vectors
 
 
 class ChromaDBAdapter(ports.DocumentRepositoryPort):
@@ -10,21 +12,20 @@ class ChromaDBAdapter(ports.DocumentRepositoryPort):
         self.collection = self.client.create_collection("documents")
         self._number_of_vectorial_results = number_of_vectorial_results
 
-    def save_document(self, document: models.Document) -> None:
-        print(f"Document: {document}")
+    # Guardar un documento con embeddings generados por OpenAI
+    def save_document(self, document: models.Document, content: str, openai_client) -> None:
+        embeddings_document = document_to_vectors(content, openai_client)
+
+        # Si hay más de un embedding, combinarlo promediando
+        if len(embeddings_document) > 1:
+            combined_embedding = np.mean(embeddings_document, axis=0).tolist()
+        else:
+            combined_embedding = embeddings_document[0]
+
+        # Agregar el documento a ChromaDB con su embedding
         self.collection.add(
-            ids=[document.id],
-            documents=[document.content]
+            ids=[document.document_id],
+            embeddings=[combined_embedding],  # Aseguramos que sea una lista de embeddings
+            documents=[content]
         )
 
-    def get_documents(self, query: str, n_results: int | None = None) -> List[models.Document]:
-        if not n_results:
-            n_results = self._number_of_vectorial_results
-        results = self.collection.query(query_texts=[query], n_results=n_results)
-        print(query)
-        print(f"Results: {results}")
-        documents = []
-        for i, doc_id_list in enumerate(results['ids']):
-            for doc_id in doc_id_list:
-                documents.append(models.Document(id=doc_id, content=results['documents'][i][0]))
-        return documents
