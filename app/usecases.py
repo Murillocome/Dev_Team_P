@@ -6,7 +6,8 @@ from app.helpers.strategies_poc import FileReader
 
 
 class RAGService:
-    def __init__(self, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort):
+    def __init__(self, db: ports.DatabasePort, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort) -> None:
+        self.db = db
         self.document_repo = document_repo
         self.openai_adapter = openai_adapter
 
@@ -37,3 +38,6 @@ class RAGService:
         content = FileReader(document.ruta).read_file()
         # Realiza embedding, chunks y guarda en ChromaDB
         self.document_repo.save_document(document, content, self.openai_adapter)
+
+    def sing_up(self, username: str, password: str) -> None:
+        self.db.save_user(username, password)
