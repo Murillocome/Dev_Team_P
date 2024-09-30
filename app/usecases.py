@@ -6,7 +6,8 @@ from app.helpers.strategies_poc import FileReader
 
 
 class RAGService:
-    def __init__(self, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort):
+    def __init__(self, db: ports.DatabasePort, document_repo: ports.DocumentRepositoryPort, openai_adapter: ports.LlmPort) -> None:
+        self.db = db
         self.document_repo = document_repo
         self.openai_adapter = openai_adapter
 
