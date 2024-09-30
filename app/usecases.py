@@ -38,3 +38,6 @@ class RAGService:
         content = FileReader(document.ruta).read_file()
         # Realiza embedding, chunks y guarda en ChromaDB
         self.document_repo.save_document(document, content, self.openai_adapter)
+
+    def sing_up(self, username: str, password: str) -> None:
+        self.db.save_user(username, password)
