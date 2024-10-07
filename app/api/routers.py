@@ -6,13 +6,6 @@ from app.api import dependencies
 
 rag_router = APIRouter()
 
-
-@rag_router.post("/sing-up/", status_code=201)
-def sing_up(username: str, password: str,
-            rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    rag_service.sing_up(username, password)
-    return {"status": "User created successfully"}
-
 @rag_router.post("/save-document/", status_code=201)
 def save_document(file: UploadFile = File(...),
                         rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
@@ -20,16 +13,26 @@ def save_document(file: UploadFile = File(...),
     rag_service.save_document(file)
     return {"status": "Document saved successfully"}
 
-@rag_router.post("/generate-answer/", status_code=200)
+@rag_router.get("/generate-answer/", status_code=201)
 def generate_answer(query: str,
                     rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    return {"answer": rag_service.generate_answer(query)}
+    return rag_service.generate_answer(query)
+
+@rag_router.get("/get-document/")
+def get_document(document_id: str,
+                 rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
+    document = rag_service.get_document(document_id)
+    if document:
+        return document
+    return {"status": "Document not found"}
+
+@rag_router.post("/sing-up/", status_code=201)
+def sing_up(username: str, password: str,
+            rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
+    rag_service.sing_up(username, password)
+    return {"status": "User created successfully"}
 
 @rag_router.get("/get-vectors/", status_code=201)
 def get_vectors(rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
     return rag_service.get_vectors()
 
-@rag_router.get("/generate-answer/", status_code=201)
-def generate_answer(query: str,
-                    rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    return rag_service.generate_answer(query)

@@ -32,11 +32,13 @@ class RAGService:
 
         # Crear modelo ducumento con valores iniciales
         document = Document(nombre=file_name, ruta=file_path)
-        # Guardar información del documento en MongoDB
-        self.db.save_document(document)
 
         # Obtengo el contenido del documento
         content = FileReader(document.ruta).read_file()
+
+        # Guardar información del documento en MongoDB
+        self.db.save_document(document)
+
         # Realiza embedding, chunks y guarda en ChromaDB
         self.document_repo.save_document(document, content, self.openai_adapter)
 

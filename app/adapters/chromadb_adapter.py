@@ -28,6 +28,7 @@ class ChromaDBAdapter(ports.DocumentRepositoryPort):
             embeddings=[combined_embedding],  # Aseguramos que sea una lista de embeddings
             documents=[content]
         )
+
     # Obtener documentos usando embeddings generados para la query
     def get_documents(self, query: str, openai_client, n_results: int | None = None) -> List[models.Document]:
         if not n_results:
@@ -48,4 +49,5 @@ class ChromaDBAdapter(ports.DocumentRepositoryPort):
 
     # Obtener vectores almacenados en la colección
     def get_vectors(self):
-        return self.collection.get(include=['embeddings', 'documents','metadatas'])
+        data = self.collection.get(include=['embeddings', 'documents', 'metadatas'])
+        return data
