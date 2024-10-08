@@ -22,6 +22,8 @@ class ChromaDBAdapter(ports.DocumentRepositoryPort):
         else:
             combined_embedding = embeddings_document[0]
 
+
+
         # Agregar el documento a ChromaDB con su embedding
         self.collection.add(
             ids=[document.document_id],
@@ -49,5 +51,12 @@ class ChromaDBAdapter(ports.DocumentRepositoryPort):
 
     # Obtener vectores almacenados en la colección
     def get_vectors(self):
-        data = self.collection.get(include=['embeddings', 'documents', 'metadatas'])
-        return data
+        data = self.collection.get(include=['embeddings', 'documents'])
+
+        data_formateada = {
+            'ids': data.get('ids', []),
+            'embeddings': data.get('embeddings', []).tolist() if data.get('embeddings') is not None else None, # Convierte a lista si es un array
+            'documents': data.get('documents', []),
+        }
+
+        return data_formateada
