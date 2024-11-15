@@ -21,15 +21,20 @@ jobs:
       with:
         python-version: 3.11
 
-    # 3. Instalar dependencias
+    # 3. Instalar Poetry
+    - name: Install Poetry
+      run: |
+        curl -sSL https://install.python-poetry.org | python3 -
+
+    # 4. Instalar dependencias
     - name: Install dependencies
       run: poetry install
 
-    # 4. Ejecutar pruebas (pueden fallar)
+    # 5. Ejecutar pruebas (pueden fallar)
     - name: Run tests
       run: poetry run pytest --cov=app --cov-report=xml
       continue-on-error: true
 
-    # 5. Subir cobertura a Codecov
+    # 6. Subir cobertura a Codecov
     - name: Upload coverage to Codecov
       run: bash <(curl -s https://codecov.io/bash)
