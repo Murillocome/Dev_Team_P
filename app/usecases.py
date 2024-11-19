@@ -24,7 +24,7 @@ class RAGService:
         return self.openai_adapter.generate_text(prompt=query, retrieval_context=context)
 
     # Guarda un archivo subido y procesa su contenido
-    def save_document(self, file: UploadFile) -> None:
+    def save_document(self, file: UploadFile) -> str:
         # Obtiene el nombre del archivo subido
         file_name = file.filename
 
@@ -41,13 +41,15 @@ class RAGService:
 
         # Lee el contenido del documento utilizando el lector adecuado según el tipo de archivo
         content = FileReader(document.ruta).read_file()
-        print(document,content)
 
         # Guarda la información del documento en la base de datos (MongoDB)
         self.db.save_document(document)
 
         # Realiza el embedding del contenido, lo divide en fragmentos y lo guarda en ChromaDB
         self.document_repo.save_document(document, content, self.openai_adapter)
+
+        # Devuelve solo el ID del documento
+        return document.document_id
 
     # Registra un nuevo usuario en la base de datos
     def sing_up(self, username: str, password: str) -> None:

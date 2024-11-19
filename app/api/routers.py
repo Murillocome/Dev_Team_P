@@ -10,9 +10,10 @@ rag_router = APIRouter()
 @rag_router.post("/save-document/")
 def save_document(file: UploadFile = File(...),
                   rag_service: usecases.RAGService = Depends(dependencies.RAGServiceSingleton.get_instance)):
-    # Guarda el archivo recibido en MongoDB
-    rag_service.save_document(file)
-    return {"status": "Document saved successfully"}
+    # Guarda el archivo recibido en MongoDB y obtiene su ID
+    document_id = rag_service.save_document(file)
+    return {"status": "Document saved successfully", "document_id": document_id}
+
 
 @rag_router.get("/generate-answer/")
 def generate_answer(query: str,
