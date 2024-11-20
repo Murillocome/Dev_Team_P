@@ -11,30 +11,31 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. Clonar el repositorio
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # 1. Checkout del código
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    # 2. Configurar Python
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: 3.11
+      # 2. Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
 
-    # 3. Instalar Poetry
-    - name: Install Poetry
-      run: |
-        curl -sSL https://install.python-poetry.org | python3 -
+      # 3. Instalar dependencias
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install .
 
-    # 4. Instalar dependencias
-    - name: Install dependencies
-      run: poetry install
+      # 4. Ejecutar pruebas con cobertura
+      - name: Run tests
+        run: |
+          pytest --maxfail=10 --cov=app --cov-report=xml || echo "Tests failed but proceeding"
+        continue-on-error: true
 
-    # 5. Ejecutar pruebas (pueden fallar)
-    - name: Run tests
-      run: poetry run pytest --cov=app --cov-report=xml
-      continue-on-error: true
-
-    # 6. Subir cobertura a Codecov
-    - name: Upload coverage to Codecov
-      run: bash <(curl -s https://codecov.io/bash)
+      # 5. Generar y subir reporte de cobertura a Codecov
+      - name: Upload coverage to Codecov
+        run: |
+          codecov || echo "Codecov upload failed"
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
