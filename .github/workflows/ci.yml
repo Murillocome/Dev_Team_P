@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout del código
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Configurar Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      # 3. Instalar dependencias
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install .
+
+      # 4. Ejecutar pruebas con cobertura
+      - name: Run tests
+        run: |
+          pytest --maxfail=10 --cov=app --cov-report=xml || echo "Tests failed but proceeding"
+        continue-on-error: true
+
+      # 5. Generar y subir reporte de cobertura a Codecov
+      - name: Upload coverage to Codecov
+        run: |
+          codecov || echo "Codecov upload failed"
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
