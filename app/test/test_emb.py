@@ -1,6 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from app.helpers.vectorize_documents import get_openai_embeddings, document_to_vectors, chunk_text
+from app.helpers.vectorize_documents import document_to_vectors, chunk_text
 
 
 class TestVectorizeDocuments(unittest.TestCase):
