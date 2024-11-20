@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock
-
+from app.core.ports import LlmPort
 from app.adapters.openai_adapter import OpenAIAdapter
 
 @pytest.fixture
@@ -56,3 +56,11 @@ def test_generate_text_no_choices(openai_adapter, mock_openai_client):
     with pytest.raises(IndexError):
         openai_adapter.generate_text(prompt, retrieval_context)
 
+def test_generate_text_invalid_response(openai_adapter, mock_openai_client):
+    mock_openai_client.chat.completions.create.return_value = MagicMock(choices=[])
+
+    prompt = "What is AI?"
+    retrieval_context = "Artificial Intelligence basics"
+
+    with pytest.raises(IndexError):  # Cambiar AttributeError por IndexError si aplica
+        openai_adapter.generate_text(prompt, retrieval_context)
